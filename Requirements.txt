@@ -1,0 +1,18 @@
+--  CAT interface
+
+--> sdrberry
+--> Versturen CAT bericht voor band en vfo verandering
+--> Cat bericht Mode verandering
+--> 
+
+
+---- Controler
+--> Show mode
+--> Show TX / RX
+--> Show Volume
+--> Show Gain
+--> Show Band
+		Switch band filter based on band
+--> Show S-Meter
+--> Show / set VFO used A/B
+--> Show / set filter
