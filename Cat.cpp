@@ -2,26 +2,24 @@
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WebServer.h>
+#include <lvgl.h>
 #include <string>
 #include "FT891_CAT.h"
 #include "Cat.h"
 #include "network.h"
+#include "Gui_band.h"
 
 void Cat::begin()
 {
-	cat_message.begin(true, &cat_comm);
+	cat_message.begin(false, &cat_comm, false);
 	f_rxtx = false;
 	afgain = 0;
 	frequency_a = 0;
 }
 
-void Cat::checkCAT()
+bool Cat::checkCAT()
 {
-	if (cat_message.CheckCAT())
-	{
-		// Process CAT message
-
-	}
+	bool ret_val = cat_message.CheckCAT();
 /*
 	if (digitalRead(TXRX_SWITCH))
 	{
@@ -40,6 +38,7 @@ void Cat::checkCAT()
 		f_rxtx = true;
 	}
 */
+	return ret_val;
 }
 
 // Send FT command to sdrberry
@@ -50,7 +49,8 @@ void Cat::Setft(int ft)
 
 void Cat::Setag(int ag)
 {
-	afgain += ag;
+	afgain = cat_message.GetAG(false) + ag;
+	//afgain += ag;
 	if (afgain < 0)
 		afgain = 0;
 	if (afgain > 255)
@@ -91,10 +91,18 @@ uint8_t Cat::Getrg()
 	return rfgain;
 }
 
-void Comm::Send(std::string s, bool addNewline)
+void Cat::Requestinformation(int info)
+{
+	char str[20];
+
+	sprintf(str, "GT%d;", info);
+	cat_comm.Send(str);
+}
+
+void Comm::Send(std::string s)
 {
 	Serial.print(s.c_str());
-	char str[30];
+	char str[BUF_LEN];
 	sprintf(str, "Send --> %s \r\n", s.c_str());
 	DebugServer.write(0, (const uint8_t *)str, strlen(str));
 }
@@ -119,4 +127,64 @@ bool Comm::available()
 		return true;
 	else
 		return false;
+}
+
+void Comm::SendInformation(int info)
+{
+
+}
+
+void Comm::setband(int band)
+{
+	gui_band.set_button(band);
+}
+
+void Comm::Processinformation(std::string s)
+{
+	char c = s.at(0);
+	switch (c)
+	{
+	case '0':
+		break;
+	case '1':
+		break;
+	case '2':
+		{
+			std::string s1;
+
+			gui_band.reset_button();
+			std::string::iterator it = s.begin();
+			it++; it++;
+			if (it != s.end())
+			{
+				do {
+					if (*it == ',')
+					{
+						gui_band.add_button(s1);
+						s1.clear();
+					}
+					else
+						s1.push_back(*it);
+					it++;
+				} while (it != s.end());
+				gui_band.add_button(s1);
+			}
+			break;
+		}
+	}
+}
+
+void Cat::SetBnd(int bnd)
+{
+	cat_message.SetBand(bnd);
+}
+
+void Cat::SetIf(int if_filter)
+{
+	cat_message.SetSH(0,if_filter);
+}
+
+int32_t Cat::GetIf()
+{
+	return cat_message.GetSH();
 }

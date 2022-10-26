@@ -59,7 +59,7 @@ TelnetQueue					CatServer;
 TelnetClientQueue           CatTelClient;
 
 // DebugSever can be used to send debug messages to Telnet port 23
-Telnet						DebugServer(&Server, 1, "Connected to PA0PHH ESP-VPO Debug Console\r\n");
+Telnet						DebugServer(&Server, 1, "Connected to PA0PHH ESP-Controler Debug Console\r\n");
 
 // stop all wifi activity
 void TrxNetwork::network_stop()

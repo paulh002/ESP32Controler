@@ -24,7 +24,13 @@
 #ifndef _FT891_CAT_H_		// Prevent double include
 #define _FT891_CAT_H_
 
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <string>
+#include <stdint.h>
+#include <unistd.h>
+#include <memory>
 
 /*
  *	This is a macro that is used to determine the number of elements in an array. It figures
@@ -94,9 +100,10 @@ struct	msg							// Keeps everything together
 #define	MSG_ST			18			// (Data 0 - 2) Split mode off, on or on +5KHz up
 #define	MSG_SV			19			// Swap VFOs
 #define	MSG_TX			20			// Set or request transmit/receive status
-#define	MSG_FT			21			// Set or request transmit/receive status
+#define	MSG_FT			21			// Frequency Tuning delta frequency
 #define	MSG_AG			22			// Set or request volume
-#define	MSG_RG			23			// Set or request volume
+#define	MSG_RG			23			// Set or request rf gain
+#define	MSG_GT			24			// Get information command
 
 
 
@@ -104,7 +111,7 @@ struct	msg							// Keeps everything together
  *	Miscellaneous definitions:
  */
 
-#define	BUF_LEN			45			// Size of all buffers (Max FT-891 message is 41 bytes)
+#define	BUF_LEN			90			// Size of all buffers (Max FT-891 message is 41 bytes)
 #define BUF_COUNT		 8			// Number of transmit buffers
 #define	CAT_READ_TIME 25UL			// Only check for incoming messages every 25mS
 
@@ -138,8 +145,11 @@ class Cat_communicator
 {
 public:
 	virtual void Read(char c, std::string &s) = 0;
-	virtual void Send(std::string s, bool addNewline) = 0;
+	virtual void Send(std::string s) = 0;
 	virtual bool available() = 0;
+	virtual void SendInformation(int info) = 0;
+	virtual void Processinformation(std::string s) = 0;
+	virtual void setband(int band) = 0;
 };
 
 class FT891_CAT							// Class name
@@ -157,9 +167,9 @@ public:
 
 explicit FT891_CAT ();							// Constructor
 
-void	 begin ( bool debug = false , Cat_communicator* cat_communicator = nullptr);				// Initialize CAT control parameters
+void	 begin ( bool debug = false , Cat_communicator* cat_communicator = nullptr, bool bmode = true);				// Initialize CAT control parameters
 
-bool	 CheckCAT ();							// See if anything to do
+bool	 CheckCAT(bool bwait = true); 							// See if anything to do
 
 void	 SetFA  ( uint32_t freq );				// Set VFO-A frequency
 void	 SetFB  ( uint32_t freq );				// Set VFO-B frequency
@@ -167,10 +177,11 @@ void	 SetMDA ( uint8_t mode );				// Set VFO-A mode
 void	 SetMDB ( uint8_t mode );				// Set VFO-B mode
 void	 SetTX  ( uint8_t tx );					// Set transmit/receive status
 void	 SetST  ( uint8_t st );					// Set split mode
-void	SetBand	( uint16_t bnd );				// Set band in meters (for band filters)
+void	 SetBand( uint16_t bnd );				// Set band in meters (for band filters)
 void 	 SetFT  ( int ft);
 void 	 SetAG	( uint8_t ag );
 void 	 SetRG  ( uint8_t rg);
+void	 SetSH	(int status, int bandwidth);
 
 uint32_t GetFA  ();								// Get VFO-A frequency
 uint32_t GetFB  ();								// Get VFO-B frequency
@@ -180,17 +191,20 @@ uint8_t	 GetTX  ();								// Get transmit/receive status
 bool	 GetST  ();								// Get Split mode
 uint16_t GetBand();								// Get selected band in meters
 int		 GetFT  ();
-uint8_t	 GetAG	();
+uint8_t	 GetAG	(bool request = true);
 uint8_t	 GetRG();
+uint32_t GetSH();
+	
+void	SendInformation(int info);	
 /*
  *	These can't be called from the outside world:
  */
 
 private:
 
-void	set_cat_communicator(Cat_communicator* cat_communicator) { this->catcommunicator_ = cat_communicator; };
+void	 set_cat_communicator(Cat_communicator* cat_communicator) { this->catcommunicator_ = cat_communicator; };
 void	 Init ( bool debug );			// Common logic for multiple 'begin' functions
-bool	 GetMessage ();					// Get a message from the input stream
+bool	 GetMessage(bool bwait = true); // Get a message from the input stream
 msg 	 FindMsg ();					// Find the message in "msgTable"
 bool	 ParseMsg ();					// Separate any data from the message
 bool	 ProcessCmd ();					// Process a command type message
@@ -208,7 +222,7 @@ char	rxBuff[BUF_LEN];				// DxCommander receive buffer
 char	txBuff[BUF_COUNT][BUF_LEN];		// DxCommander transmit buffers
 char	dataBuff[BUF_LEN];				// Data part of a message - slightly bigger than needed
 bool	hasData = false;				// Indicator that a message included some data
-
+bool	bVFOmode = true;					// Indicator if class is used in remot control or VFO
 uint8_t	txBuffIndex = 0;				// Next txBuff to be used
 
 uint8_t	MSG_COUNT;						// Number of messages in the list
