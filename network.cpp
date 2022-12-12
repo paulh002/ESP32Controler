@@ -25,14 +25,10 @@
 #include <ESPmDNS.h>
 #include <Update.h>
 #include <ArduinoOTA.h>
-//#include <ESP32Encoder.h>
-//#include <AceButton.h>
-//using namespace ace_button;
-
-#include "setup.h"
-//#include "gui.h"
-//#include "wifigui.h"
+#include <lvgl.h>
 #include "network.h"
+#include "measurement.h"
+#include "gui.h"
 
 /*-------------------------------------------------------
    CAT Interface
@@ -80,7 +76,7 @@ void TrxNetwork::network_stop()
 	Server.close();
 	if (WiFi.status() == WL_CONNECTED)
 		WiFi.disconnect();
-//	showWifilabel(true);
+	showWifilabel(false);
 }
 
 
@@ -95,7 +91,7 @@ uint8_t TrxNetwork::begin(uint8_t type_network)
 	m_type_network = type_network;
 	sString = String("Connect to :") + String(R.ssid[ssid_count]);
 	Serial.println(sString.c_str());
-	//updateBottomStatus(LV_COLOR_ORANGE, sString);
+	updateBottomStatus(LV_PALETTE_ORANGE, sString);
 	if (strlen(R.ssid[ssid_count]))
 		WiFi.begin(R.ssid[ssid_count], R.password[ssid_count]);
 	// Wait for connection
@@ -104,13 +100,13 @@ uint8_t TrxNetwork::begin(uint8_t type_network)
 		delay(500);
 		timer++;
 		sString = sString + String(".");
-		//updateBottomStatus(LV_COLOR_ORANGE, sString);
+		updateBottomStatus(LV_PALETTE_ORANGE, sString);
 		if ((timer >= 10) && (ssid_count < NUMBR_SSIDS))
 		{
 			timer = 0;
 			sString = String(R.ssid[ssid_count]) + String(" Network not found");
 			Serial.println(sString.c_str());
-			//updateBottomStatus(LV_COLOR_ORANGE, sString);
+			updateBottomStatus(LV_PALETTE_ORANGE, sString);
 			WiFi.disconnect();
 			delay(500);
 			ssid_count++;
@@ -118,21 +114,21 @@ uint8_t TrxNetwork::begin(uint8_t type_network)
 				continue;
 			sString = String("Connect to :") + String(R.ssid[ssid_count]);
 			Serial.println(sString.c_str());
-			//updateBottomStatus(LV_COLOR_ORANGE, sString);
+			updateBottomStatus(LV_PALETTE_ORANGE, sString);
 			WiFi.begin(R.ssid[ssid_count], R.password[ssid_count]);
 		}
 		else if (ssid_count == NUMBR_SSIDS)
 		{
 			WiFi.disconnect();
 			sString = String(R.ssid[ssid_count-1]) + String(" Network not found");
-			//updateBottomStatus(LV_COLOR_ORANGE, sString);
+			updateBottomStatus(LV_PALETTE_ORANGE, sString);
 			delay(2000);
 			return 0;
 		}
 	}
 	sString = String("Connected to : ") + String(R.ssid[ssid_count]);
 	Serial.println(sString.c_str());
-	//updateBottomStatus(LV_COLOR_ORANGE, sString);
+	updateBottomStatus(LV_PALETTE_ORANGE, sString);
 	delay(1000);
 
 
@@ -146,8 +142,8 @@ uint8_t TrxNetwork::begin(uint8_t type_network)
 	String ip = WiFi.localIP().toString();
 	sString = String("IP address: ") + ip;
 	Serial.println(sString.c_str());
-	//updateBottomStatus(LV_COLOR_NAVY, sString);
-//	showWifilabel(false);
+	updateBottomStatus(LV_PALETTE_INDIGO, sString);
+	showWifilabel(true);
 	init_ota();
 
 	DebugServer.begin();
@@ -209,10 +205,10 @@ void TrxNetwork::scanWIFITask(void* pvParameters) {
 
 	vTaskDelay(1000);
 	while (1) {
-		//updateBottomStatus(LV_COLOR_ORANGE, "Searching Available WIFI ...");
+		updateBottomStatus(LV_PALETTE_ORANGE, "Searching Available WIFI ...");
 		int n = WiFi.scanNetworks();
 		if (n <= 0) {
-			//updateBottomStatus(LV_COLOR_RED, "Sorry no networks found!");
+			updateBottomStatus(LV_PALETTE_RED, "Sorry no networks found!");
 		}
 		else {
 			//xSemaphoreTake(GuiBinarySemaphore, portMAX_DELAY);
@@ -227,7 +223,7 @@ void TrxNetwork::scanWIFITask(void* pvParameters) {
 				//xSemaphoreGive(GuiBinarySemaphore);
 				vTaskDelay(10);
 			}
-			//updateBottomStatus(LV_COLOR_GREEN, String(n) + " networks found!");
+			updateBottomStatus(LV_PALETTE_GREEN, String(n) + " networks found!");
 		}
 		//vTaskDelay(30000);
 		return;

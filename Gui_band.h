@@ -1,7 +1,7 @@
 #pragma once
 #include <lvgl.h>
 #include <string>
-#include "Cat.h"
+
 
 class Gui_band
 {

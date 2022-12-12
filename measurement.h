@@ -2,9 +2,20 @@
 #ifndef _MEASUREMENT_H_
 #define _MEASUREMENT_H_
 
-#define S_METER       34            // GPIO port S-Meter
-#define FWD_METER     36            // GPIO port Fwd-Meter
+/*-------------------------------------------------------
+   Optical Rotary encoder settings (used for frequency)
+--------------------------------------------------------*/
+#define PULSE_INPUT_PIN 17  // Rotaty Encoder A
+#define PULSE_CTRL_PIN  23  // Rotaty Encoder B
+#define TXRX_SWITCH   26
+
+//#define TXRX_SWITCH   4
+//#define S_METER       32            // GPIO port S-Meter
+#define FWD_METER     33            // GPIO port Fwd-Meter
 #define REV_METER     39             // GPIO port Rev-Meter
+#define NUMBR_SSID    5                // Store max 5 ssid's and passwords
+
+#define COLDSTART_REF   99
 
 #define TWENTYTOONE               0 // 1 to select the values for 20 to 1 coupler, else 0
 #define SAMPLE_TIMER           1000 // Interrupt timer, in microseconds
@@ -27,7 +38,7 @@
 #define CAL_FWD 1                                      // Good input signal detected, forward direction
 #define CAL_REV 2                                      // Good input signal detected, reverse direction (redundant)
 #define CAL_SCALE_WATT          50  // default scale for watt output meter
-
+#define SI5351_XTAL_FREQ 2500000000
 #if TWENTYTOONE                     // Defs when using a 20 to 1 coupler and AD7991
 #define MIN_PWR_FOR_SWR_CALC   0.5  // Minimum Power in mW for SWR calculation and display
 #else                               // Defs when using a 30 to 1 coupler and AD7991
@@ -115,6 +126,7 @@ typedef struct {
                 cal_t    cal_AD[2];                 // 2 Calibration points for both AD8307, if AD8307 option
                 uint16_t PEP_period;                // PEP envelope sampling time in SAMPLE_TIME increments
                 uint16_t AVG_period;                // AVG sampling time in SAMPLE_TIME increments
+                unsigned thresshold : 3;   // Lowest power level shown on display
                 unsigned low_power_floor     : 3;   // Lowest power level shown on display
                      #define  FLOOR_NOISEFLOOR 0    // No low power level threshold, lowest power shown is the effective noise floor
                      #define  FLOOR_ONE_uW     1    // Any power levels below 1uW are displayed as "0 uW"
@@ -163,4 +175,6 @@ extern void calc_SWR_and_power(void);
 extern void start_measurement();
 extern void stop_measurement();
 extern uint8_t check_input_cal();
+extern void init_measurement(bool upgrade);
+extern uint16_t print_p_mw_value(double pwr, std::string& value);
 #endif

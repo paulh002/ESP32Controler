@@ -104,6 +104,8 @@ struct	msg							// Keeps everything together
 #define	MSG_AG			22			// Set or request volume
 #define	MSG_RG			23			// Set or request rf gain
 #define	MSG_GT			24			// Get information command
+#define	MSG_IG			25			// Get information command
+
 
 
 
@@ -182,6 +184,8 @@ void 	 SetFT  ( int ft);
 void 	 SetAG	( uint8_t ag );
 void 	 SetRG  ( uint8_t rg);
 void	 SetSH	(int status, int bandwidth);
+void	 PollSM();
+void	 SetIG  (uint8_t ig);
 
 uint32_t GetFA  ();								// Get VFO-A frequency
 uint32_t GetFB  ();								// Get VFO-B frequency
@@ -194,7 +198,9 @@ int		 GetFT  ();
 uint8_t	 GetAG	(bool request = true);
 uint8_t	 GetRG();
 uint32_t GetSH();
-	
+uint8_t	 GetSM();
+uint8_t  GetIG();
+
 void	SendInformation(int info);	
 /*
  *	These can't be called from the outside world:

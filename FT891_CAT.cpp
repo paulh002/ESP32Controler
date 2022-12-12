@@ -79,6 +79,7 @@ struct	status {
 	uint8_t			AG		 = 0;				// AF Gain
 	int				FT		 = 0;				// Step frequency
 	uint8_t			RG		 = 0;				// RF Gain
+	uint8_t			IG		 = 0;				// IF Gain
 } radioStatus;
 
 
@@ -124,7 +125,8 @@ struct	status {
 		{ "FT",  MSG_FT, MSG_BOTH },		// Frequency Tune step frequency + or - X  (It is assumed tranceiver will respond with FA or FB command
 		{ "AG",  MSG_AG, MSG_BOTH },		// Set Volume
 		{ "RG",  MSG_RG, MSG_BOTH },		// Set rf gain 
-		{ "GT",  MSG_GT, MSG_BOTH }			// Get command 0 = Max Volume, 1 Max Gain, 2 List bands, 3 List Filter 			
+		{ "GT",  MSG_GT, MSG_BOTH },		// Get command 0 = Max Volume, 1 Max Gain, 2 List bands, 3 List Filter 			
+		{ "IG",  MSG_IG, MSG_BOTH }		    // Get command 0 = Max Volume, 1 Max Gain, 2 List bands, 3 List Filter 			
 	};
 
 
@@ -419,6 +421,12 @@ bool FT891_CAT::ProcessCmd ()
 			cmdProcessed = true;
 			break;
 		
+		case MSG_IG:									// Set IG IF Gain
+			tempFT = atoi(dataBuff);					// Convert into temporary place
+			radioStatus.IG = tempFT;
+			cmdProcessed = true;
+			break;
+
 		case MSG_FA:									// Set VFO-A frequency
 			tempFreq = atol ( dataBuff );				// Convert into temporary place
 			radioStatus.FA = tempFreq;					// Update radioStatus.FA					
@@ -498,7 +506,7 @@ bool FT891_CAT::ProcessCmd ()
 			break;
 
 		case MSG_SM:									// S-meter reading
-//			radioStatus.SM = atoi ( dataBuff );			// Set value in the structure
+			radioStatus.SM = atoi ( dataBuff );			// Set value in the structure
 
 			cmdProcessed = true;						// Command was processed
 			break;
@@ -606,6 +614,11 @@ void FT891_CAT::ProcessStatus ()
 		case MSG_RG:									// Get RG RF Gain
 			sprintf(tempBuff,							// Format message
 				"RG0%03u;", radioStatus.RG);
+			break;
+		
+		case MSG_IG:									// Get RG RF Gain
+			sprintf(tempBuff,							// Format message
+				"IG0%03u;", radioStatus.IG);
 			break;
 
 		case MSG_NA:									// Request narrow IF shift status
@@ -845,6 +858,16 @@ uint8_t FT891_CAT::GetTX ()							// Get transmit/receive status
 	return radioStatus.TX;							// Done!
 }
 
+void FT891_CAT::PollSM()							// Get SM status
+{
+	catcommunicator_->Send("SM;");
+}
+
+uint8_t FT891_CAT::GetSM()							// Get SM status
+{
+	catcommunicator_->Send("SM;");
+	return radioStatus.SM;						// Done!
+}
 
 /*
  *	Allow the main program to set or get the split mode status:
@@ -947,3 +970,25 @@ void FT891_CAT::SetSH(int status, int bandwidth)			// Set IF Bandwidth
 		s.push_back(str[i]);
 	catcommunicator_->Send(s);
 }
+
+void FT891_CAT::SetIG(uint8_t ig)					// Set and send encoder step
+{
+	char str[20];
+	std::string s;
+
+	if (ig > 255) ig = 255;
+	sprintf(str, "%s%d;", msgTable[MSG_IG].Name, ig);
+	for (int i = 0; i < strlen(str); i++)
+		s.push_back(str[i]);
+	catcommunicator_->Send(s);
+	radioStatus.RG = ig;						// Done!
+}
+
+uint8_t FT891_CAT::GetIG()							// Get if gain
+{
+	if (!bVFOmode)
+		catcommunicator_->Send("IG;"); 				// Send IG command
+	return radioStatus.IG;
+}  
+
+// Done!

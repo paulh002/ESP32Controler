@@ -9,17 +9,25 @@
 #include "network.h"
 #include "Gui_band.h"
 
+Cat CatInterface;
+
 void Cat::begin()
 {
 	cat_message.begin(false, &cat_comm, false);
 	f_rxtx = false;
-	afgain = 0;
 	frequency_a = 0;
+	lastCat = 0;
+
+	CatInterface.Getag();
+	CatInterface.Getrg();
+	CatInterface.Getig();
+	CatInterface.Requestinformation(2);
 }
 
 bool Cat::checkCAT()
 {
 	bool ret_val = cat_message.CheckCAT();
+
 /*
 	if (digitalRead(TXRX_SWITCH))
 	{
@@ -49,7 +57,7 @@ void Cat::Setft(int ft)
 
 void Cat::Setag(int ag)
 {
-	afgain = cat_message.GetAG(false) + ag;
+	int afgain = cat_message.GetAG(false) + ag;
 	//afgain += ag;
 	if (afgain < 0)
 		afgain = 0;
@@ -60,8 +68,7 @@ void Cat::Setag(int ag)
 
 uint8_t Cat::Getag()
 {
-	afgain = cat_message.GetAG();
-	return afgain;
+	return cat_message.GetAG();
 }
 
 long long Cat::Getfa()
@@ -72,12 +79,22 @@ long long Cat::Getfa()
 
 void Cat::Setrg(int rg)
 {
-	rfgain += rg;
+	int rfgain = cat_message.GetRG() + rg;
 	if (rfgain < 0)
 		rfgain = 0;
 	if (rfgain > 255)
 		rfgain = 255;
 	cat_message.SetRG((uint8_t)rfgain);
+}
+
+void Cat::Setig(int ig)
+{
+	int ifgain = cat_message.GetIG() + ig ;
+	if (ifgain < 0)
+		ifgain = 0;
+	if (ifgain > 255)
+		ifgain = 255;
+	cat_message.SetIG((uint8_t)ifgain);
 }
 
 void Cat::Settx(int tx)
@@ -87,8 +104,12 @@ void Cat::Settx(int tx)
 
 uint8_t Cat::Getrg()
 {
-	rfgain = cat_message.GetRG();
-	return rfgain;
+	return cat_message.GetRG();
+}
+
+uint8_t Cat::Getig()
+{
+	return cat_message.GetIG();
 }
 
 void Cat::Requestinformation(int info)
@@ -104,7 +125,7 @@ void Comm::Send(std::string s)
 	Serial.print(s.c_str());
 	char str[BUF_LEN];
 	sprintf(str, "Send --> %s \r\n", s.c_str());
-	DebugServer.write(0, (const uint8_t *)str, strlen(str));
+	DebugServer.write(0, (const uint8_t*)str, strlen(str));
 }
 
 void Comm::Read(char c, std::string& s)
@@ -187,4 +208,14 @@ void Cat::SetIf(int if_filter)
 int32_t Cat::GetIf()
 {
 	return cat_message.GetSH();
+}
+
+int Cat::GetSM()
+{
+	return cat_message.GetSM();
+}
+
+void Cat::PollSM()
+{
+	return cat_message.PollSM();
 }

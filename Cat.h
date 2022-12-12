@@ -30,17 +30,19 @@ public:
 	uint8_t	Getrg();
 	void	Settx(int tx);
 	void	SetBnd(int bnd);
+	int		GetSM();
 	void	Requestinformation(int info);
-	void	Processinformation(std::string s);
+	uint8_t Getig();
+	void	Setig(int ig);
 
 private:
 	FT891_CAT	cat_message;
 	bool		f_rxtx;
 	Comm		cat_comm;
-
-	int			afgain;
-	int			rfgain;
 	long long	frequency_a;
+	int			lastCat;
+
+	void PollSM();
 };
 
 extern Cat CatInterface;

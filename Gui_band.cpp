@@ -1,9 +1,30 @@
 #include "Gui_band.h"
+#include "Cat.h"
+#include "gui.h"
 
+Gui_band	gui_band;
 
-void	Gui_band::init_gui(lv_obj_t* o_tab, lv_group_t* button_group)
+int			button_width;
+int			button_height;
+int			button_width_margin;
+int			button_height_margin;
+int			button_selected = -1;
+
+const lv_coord_t x_margin = 5;
+const lv_coord_t y_margin = 5;
+const int x_number_buttons = 3;
+const int y_number_buttons = 3;
+const lv_coord_t tab_margin = 20;
+
+void	Gui_band::init_gui(lv_obj_t* tabview_tab, lv_group_t* button_group)
 {
-	m_tab = o_tab;
+	m_tab = lv_tabview_add_tab(tabview_tab, "Band");
+
+	button_width_margin = ((screenWidth - tab_margin) / x_number_buttons);
+	button_width = ((screenWidth - tab_margin) / x_number_buttons) - x_margin;
+	button_height = 50;
+	button_height_margin = button_height + y_margin;
+
 	lv_style_init(&style_btn);
 	lv_style_set_radius(&style_btn, 10);
 	lv_style_set_bg_color(&style_btn, lv_color_make(0x60, 0x60, 0x60));
