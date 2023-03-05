@@ -141,7 +141,8 @@ struct	msg							// Keeps everything together
 #define	TX_OFF			0					// Receive mode
 #define	TX_CAT			1					// Transmitting because of CAT command
 #define	TX_MAN			2					// Transmitter keyed manually
-
+#define TX_TUNE_MAN		3					// Transmitter tune manually
+#define TX_TUNE_CAT		4					// Transmitter tune CAT
 
 class Cat_communicator
 {

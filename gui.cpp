@@ -226,25 +226,37 @@ void guiTask(void* arg) {
 		guirx.barValue(CatInterface.GetSM());
 
 
-		//currentRxtx = CatInterface.GetTX();
+		int RemoteRxTx = CatInterface.GetTX();
+		if (RemoteRxTx == TX_MAN)
+		{
+			lv_tabview_set_act(tabview_tab, 1, LV_ANIM_OFF);
+			currentRxtx = TX_MAN;
+		}
+		
+		if (RemoteRxTx == TX_OFF && currentRxtx != TX_OFF)
+		{
+			lv_tabview_set_act(tabview_tab, 0, LV_ANIM_OFF);
+			currentRxtx = TX_OFF;
+		}
+
 		int rxtx = digitalRead(TXRX_SWITCH);
 		if (!rxtx)
 		{
-			if (currentRxtx == 0)
+			if (currentRxtx == TX_OFF)
 			{
-				CatInterface.Settx(1);
+				CatInterface.Settx(TX_CAT);
 				lv_tabview_set_act(tabview_tab, 1, LV_ANIM_OFF);
+				currentRxtx = TX_CAT;
 			}
-			currentRxtx = 1;
 		}
 		else
 		{
-			if (currentRxtx)
+			if (currentRxtx == TX_CAT)
 			{
-				CatInterface.Settx(0);
+				CatInterface.Settx(TX_OFF);
 				lv_tabview_set_act(tabview_tab, 0, LV_ANIM_OFF);
+				currentRxtx = TX_OFF;
 			}
-			currentRxtx = 0;
 		}
 		vTaskDelay(1);
 	}
