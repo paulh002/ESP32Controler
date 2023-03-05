@@ -24,6 +24,7 @@ void setup() {
 	//pinMode(S_METER, ANALOG);
 	pinMode(FWD_METER, ANALOG);
 	pinMode(REV_METER, ANALOG);
+	pinMode(TXRX_SWITCH, INPUT);
 
 	GuiBinarySemaphore = xSemaphoreCreateMutex();
 	if (GuiBinarySemaphore == NULL) {

@@ -219,3 +219,8 @@ void Cat::PollSM()
 {
 	return cat_message.PollSM();
 }
+
+int Cat::GetTX()
+{
+	return cat_message.GetTX();
+}

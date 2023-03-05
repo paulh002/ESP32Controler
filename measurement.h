@@ -5,8 +5,8 @@
 /*-------------------------------------------------------
    Optical Rotary encoder settings (used for frequency)
 --------------------------------------------------------*/
-#define PULSE_INPUT_PIN 17  // Rotaty Encoder A
-#define PULSE_CTRL_PIN  23  // Rotaty Encoder B
+#define PULSE_INPUT_PIN 23  // Rotaty Encoder A
+#define PULSE_CTRL_PIN  17  // Rotaty Encoder B
 #define TXRX_SWITCH   26
 
 //#define TXRX_SWITCH   4

@@ -19,14 +19,20 @@
 /*-------------------------------------------------------
 Rotary encoder settings
 --------------------------------------------------------*/
+#ifdef TCA_AVAILABLE 
 TCA9548		tca(0x70);
+#endif
+
 ESP32Encoder Encoder;
 const int no_rotary_encoders = 2;
-RotaryEncoder decoder(0x3C, no_rotary_encoders, RotaryEncoder::LatchMode::TWO03); //0x24
+#define PCF8754A_I2C 0x3C
+#define PCF8754_I2C 0x24
+
+RotaryEncoder decoder(PCF8754_I2C, no_rotary_encoders, RotaryEncoder::LatchMode::TWO03); //0x24
 const int	tca_sda = 21;
 const int	tca_sdi = 22;
 const int	tca_pcf = 2;
-const int PCF8754_INT = 4; //35
+const int PCF8754_INT = 35; //35 or 4 (vfo pcb)
 
 /* TFT instance */
 TFT_eSPI tft = TFT_eSPI();
@@ -118,10 +124,7 @@ void read_encoder(lv_indev_drv_t* indev, lv_indev_data_t* data)
 {
 	data->enc_diff = (int)decoder.getDirection(0);
 	if (data->enc_diff)
-	{
-		Serial.println(data->enc_diff);
 		decoder.ClearEncoder(0);
-	}
 	data->state = enc_button_state;
 	if (data->enc_diff > 0)
 		data->enc_diff = 1;
@@ -133,7 +136,7 @@ void read_encoder(lv_indev_drv_t* indev, lv_indev_data_t* data)
 volatile int lastEncoding{}, lastEncoding1{}, lastCat{};
 int		total = 0;
 int	    tx = 0;
-int		value;
+int		value, currentRxtx = 0;
 
 void guiTask(void* arg) {
 	
@@ -149,7 +152,7 @@ void guiTask(void* arg) {
 
 			long mtime, mtime1;
 			mtime = mtime1 = millis();
-			while (mtime1 - mtime < 10)
+			while (mtime1 - mtime < 100)
 			{
 				decoder.tick();
 				mtime1 = millis();
@@ -221,7 +224,29 @@ void guiTask(void* arg) {
 			lastEncoding1 = currMillis;
 		}
 		guirx.barValue(CatInterface.GetSM());
-		vTaskDelay(5);
+
+
+		//currentRxtx = CatInterface.GetTX();
+		int rxtx = digitalRead(TXRX_SWITCH);
+		if (!rxtx)
+		{
+			if (currentRxtx == 0)
+			{
+				CatInterface.Settx(1);
+				lv_tabview_set_act(tabview_tab, 1, LV_ANIM_OFF);
+			}
+			currentRxtx = 1;
+		}
+		else
+		{
+			if (currentRxtx)
+			{
+				CatInterface.Settx(0);
+				lv_tabview_set_act(tabview_tab, 0, LV_ANIM_OFF);
+			}
+			currentRxtx = 0;
+		}
+		vTaskDelay(1);
 	}
 }
 
@@ -259,6 +284,7 @@ void init_encoders()
 	{
 	char str[80];
 
+#ifdef TCA_AVAILABLE
 	if (tca.begin(tca_sda, tca_sdi, 400000))
 		Serial.println("TCA OK");
 	else
@@ -266,6 +292,10 @@ void init_encoders()
 	delay(20);
 	tca.selectChannel(2);
 	delay(20);
+#endif
+	if (decoder.begin(tca_sda, tca_sdi, 400000))
+		Serial.println("PCF OK");
+
 	if (decoder.isConnected())
 		Serial.println("PCF OK");
 	else
@@ -309,12 +339,12 @@ void init_gui() {
 	disp_drv.draw_buf = &draw_buf;
 	lv_disp_t* display = lv_disp_drv_register(&disp_drv);
 
-	/*Initialize the (dummy) input device driver
+	/*Initialize the (dummy) input device driver*/
 	static lv_indev_drv_t indev_drv;
 	lv_indev_drv_init(&indev_drv);
 	indev_drv.type = LV_INDEV_TYPE_POINTER;
 	indev_drv.read_cb = my_touchpad_read;
-	lv_indev_drv_register(&indev_drv);*/
+	lv_indev_drv_register(&indev_drv);
 
 	static lv_indev_drv_t indev_drv_enc;
 	lv_indev_drv_init(&indev_drv_enc);
@@ -388,7 +418,8 @@ void init_gui() {
 	lv_group_add_obj(button_group, tab_buttons);
 	lv_tabview_set_act(tabview_tab, 0, LV_ANIM_OFF);
 	CatInterface.begin();
-	guirx.focus();
+	//guirx.focus();
+	lv_group_focus_obj(tabview_tab);
 	xTaskCreate(guiTask,"gui",4096 * 4,NULL,2, &xHandle);
 }
 
@@ -409,7 +440,7 @@ void tabview_event_handler(lv_event_t* e)
 		case 2:
 			break;
 		case 3:
-			settings.getFocus();
+			//settings.getFocus();
 			break;
 
 		}

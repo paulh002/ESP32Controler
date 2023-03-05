@@ -34,6 +34,7 @@ public:
 	void	Requestinformation(int info);
 	uint8_t Getig();
 	void	Setig(int ig);
+	int		GetTX();
 
 private:
 	FT891_CAT	cat_message;
