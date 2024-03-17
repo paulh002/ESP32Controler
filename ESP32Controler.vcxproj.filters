@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ESP32Controler.ino" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="__vm\.ESP32Controler.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -92,5 +89,6 @@
     <ClCompile Include="guiRx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ESP32Controler.ino" />
   </ItemGroup>
 </Project>

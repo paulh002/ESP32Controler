@@ -115,6 +115,11 @@ void my_touchpad_read(lv_indev_drv_t* indev_driver, lv_indev_data_t* data)
 		/*Set the coordinates*/
 		data->point.x = touchX;
 		data->point.y = touchY;
+
+		char str[80];
+
+		sprintf(str, "x %d y %d ", touchX, touchY);
+		Serial.println(str);
 	}
 }
 
