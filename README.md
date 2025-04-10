@@ -9,6 +9,18 @@ ToDo:
 Done:
 - USB CAT interface support 
 
+Please add a file credentials.h to the source files for wifi
+```
+#ifndef _CREDENTIALS_H_			// Prevent double inclusion
+#define _CREDENTIALS_H_
+
+#define NUMBR_SSID  2
+const char* _ssid[] = {"wifi-ssid1", "wifi-ssid2" };
+const char* _password[] = {"password", "password"};
+
+#endif
+```
+
 ![sdrberry](https://github.com/paulh002/sdrberry/blob/master/IMG_20231015_131803.jpg)
 
 [![Radioberry demo](https://img.youtube.com/vi/BMJiv3YGv-k/0.jpg)](https://youtu.be/PQ_Np5SfcxA)

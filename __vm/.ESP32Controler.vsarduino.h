@@ -13,16 +13,8 @@
 
 #ifndef _VSARDUINO_H_
 #define _VSARDUINO_H_
-#define __ESP32_esp32__ 1
-#define __ESP32_ESP32__ 1
-#define HAVE_CONFIG_H 1
-#define MBEDTLS_CONFIG_FILE "mbedtls/esp_config.h"
-#define UNITY_INCLUDE_CONFIG_H 1
-#define WITH_POSIX 1
-#define _GNU_SOURCE 1
-#define IDF_VER "v4.4.2"
-#define ESP_PLATFORM 1
-#define _POSIX_READER_WRITER_LOCKS 1
+#define __2302_esp32__ 1
+#define __2302_ESP32__ 1
 #define F_CPU 240000000L
 #define ARDUINO 108016
 #define ARDUINO_ESP32_DEV 1
@@ -30,6 +22,8 @@
 #define ARDUINO_BOARD "ESP32_DEV"
 #define ARDUINO_VARIANT "esp32"
 #define ARDUINO_PARTITION_default 1
+#define ARDUINO_HOST_OS "windows"
+#define ARDUINO_FQBN "{build.fqbn}"
 #define ESP32 1
 #define CORE_DEBUG_LEVEL 0
 #define ARDUINO_RUNNING_CORE 1

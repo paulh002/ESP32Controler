@@ -1,5 +1,6 @@
 #include "mainTab.h"
 #include "measurement.h"
+#include <string>
 
 mainTab	mainTabSwr;
 
