@@ -9,7 +9,7 @@ ToDo:
 Done:
 - USB CAT interface support 
 
-Please add a file credentials.h to the source files for wifi
+Please add/modify a file credentials.h to the source files for wifi
 ```
 #ifndef _CREDENTIALS_H_			// Prevent double inclusion
 #define _CREDENTIALS_H_
