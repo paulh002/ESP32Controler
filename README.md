@@ -1,3 +1,8 @@
+# This repo is archived
+Current Arduino version has made this project not fitting anymore in the ESP32 also libraries have updated and are not matching with the code any more.
+This repo is only for reference.
+
+
 # ESP32 USB CAT Controler
 
 A USB remote control for sdrberry or other CAT enabled SDR or VFO

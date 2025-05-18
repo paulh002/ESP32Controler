@@ -21,7 +21,7 @@
 #define ARDUINO_ARCH_ESP32 1
 #define ARDUINO_BOARD "ESP32_DEV"
 #define ARDUINO_VARIANT "esp32"
-#define ARDUINO_PARTITION_default 1
+#define ARDUINO_PARTITION_no_ota 1
 #define ARDUINO_HOST_OS "windows"
 #define ARDUINO_FQBN "{build.fqbn}"
 #define ESP32 1

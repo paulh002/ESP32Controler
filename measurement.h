@@ -1,7 +1,7 @@
 
 #ifndef _MEASUREMENT_H_
 #define _MEASUREMENT_H_
-
+#include <string>
 /*-------------------------------------------------------
    Optical Rotary encoder settings (used for frequency)
 --------------------------------------------------------*/

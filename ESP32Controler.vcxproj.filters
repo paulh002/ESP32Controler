@@ -18,7 +18,7 @@
     <ClInclude Include="__vm\.ESP32Controler.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="network.h">
+    <ClInclude Include="trxnetwork.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="measurement.h">
@@ -56,7 +56,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="network.cpp">
+    <ClCompile Include="trxnetwork.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FT891_CAT.cpp">

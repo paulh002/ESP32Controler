@@ -6,7 +6,7 @@
 #include <string>
 #include "FT891_CAT.h"
 #include "Cat.h"
-#include "network.h"
+#include "trxnetwork.h"
 #include "Gui_band.h"
 
 Cat CatInterface;

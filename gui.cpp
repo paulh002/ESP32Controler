@@ -324,7 +324,7 @@ void init_encoders()
 	attachInterrupt(PCF8754_INT, moved, FALLING); //35
 	decoder.setButtonPorts(5, 4);
 
-	ESP32Encoder::useInternalWeakPullResistors = NONE;
+	ESP32Encoder::useInternalWeakPullResistors = puType::none;
 	Encoder.attachHalfQuad(PULSE_INPUT_PIN, PULSE_CTRL_PIN);
 	}
 

@@ -7,7 +7,7 @@
 #include <Wire.h>
 #include <WiFi.h>
 #include <lvgl.h>
-#include "network.h"
+#include "trxnetwork.h"
 #include "measurement.h"
 #include "credentials.h"
 #include "gui.h"

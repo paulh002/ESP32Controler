@@ -23,10 +23,10 @@
 #include <WiFiClient.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
-#include <Update.h>
-#include <ArduinoOTA.h>
+//#include <Update.h>
+//#include <ArduinoOTA.h>
 #include <lvgl.h>
-#include "network.h"
+#include "trxnetwork.h"
 #include "measurement.h"
 #include "gui.h"
 
@@ -71,7 +71,7 @@ void TrxNetwork::network_stop()
 	{
 		CatServer.stop();
 	}
-	ArduinoOTA.end();
+	//ArduinoOTA.end();
 	TRXNETServer.close();
 	Server.close();
 	if (WiFi.status() == WL_CONNECTED)
@@ -144,7 +144,7 @@ uint8_t TrxNetwork::begin(uint8_t type_network)
 	Serial.println(sString.c_str());
 	updateBottomStatus(LV_PALETTE_INDIGO, sString);
 	showWifilabel(true);
-	init_ota();
+	//init_ota();
 
 	DebugServer.begin();
 	if (type_network == TRXNET_CLIENT)
@@ -248,7 +248,7 @@ void TrxNetwork::init_ota(void)
 	// Password can be set with it's md5 value as well
 // MD5(admin) = 21232f297a57a5a743894a0e4a801fc3
 
-
+/*
 // ArduinoOTA.setPasswordHash("21232f297a57a5a743894a0e4a801fc3");
 WiFi.macAddress(mac);
 snprintf(fullhostname, maxlen, "%s-%02x%02x%02x", host, mac[3], mac[4], mac[5]);
@@ -275,19 +275,19 @@ ArduinoOTA.onStart([]() {
 			.onError([](ota_error_t error) {
 				//set_ota_label("Error : " + String(error));
 				delay(1000);
-				/*if (error == OTA_AUTH_ERROR) set_ota_label1("Auth Failed");
+*/				/*if (error == OTA_AUTH_ERROR) set_ota_label1("Auth Failed");
 				else if (error == OTA_BEGIN_ERROR) set_ota_label1("Begin Failed");  
 				else if (error == OTA_CONNECT_ERROR) set_ota_label1("Connect Failed"); 
 				else if (error == OTA_RECEIVE_ERROR) set_ota_label1("Receive Failed");
 				else if (error == OTA_END_ERROR) set_ota_label1("End Failed"); 
 				*/
-				});
+/* });
 
 			ArduinoOTA.begin();
-}
+*/}
 
 void TrxNetwork::network_loop() {
-	ArduinoOTA.handle();
+	//ArduinoOTA.handle();
 	DebugServer.handle();
 
 // Read the debugServer buffer even if we don't do anything with it
